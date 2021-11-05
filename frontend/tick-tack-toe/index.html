@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tick Tack Toe - No Build & No Framework</title>
+    <link rel="stylesheet" href="styles.css">
+    <script type="module" src="components/index.js"></script>
+</head>
+
+<body>
+    <main>
+        <div id="errors" clas="errors"></div>
+        <game-app>
+    </main>
+    <template id="game-app-template">
+        <div class="game">
+            <div class="game-board">
+                <div>
+                    <div class="board-row">
+                        <game-square color="white" id="0"></game-square>
+                        <game-square color="white" id="1"></game-square>
+                        <game-square color="white" id="2"></game-square>
+                    </div>
+                    <div class="board-row">
+                        <game-square color="white" id="3"></game-square>
+                        <game-square color="white" id="4"></game-square>
+                        <game-square color="white" id="5"></game-square>
+                    </div>
+                    <div class="board-row">
+                        <game-square color="white" id="6"></game-square>
+                        <game-square color="white" id="7"></game-square>
+                        <game-square color="white" id="8"></game-square>
+                    </div>
+                </div>
+                <div class="game-info">
+                    <div id="game-info-player"></div>
+                    <ol>
+                        <li><button id="game-info-start">Go to game start</button></li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </template>
+</body>
+
+</html>
