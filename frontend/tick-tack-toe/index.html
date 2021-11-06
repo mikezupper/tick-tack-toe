@@ -11,12 +11,13 @@
 </head>
 
 <body>
-    <main>
+    <div id="root">
         <div id="errors" clas="errors"></div>
-        <game-app>
-    </main>
+        <game-app></game-app>
+    </div>
     <template id="game-app-template">
         <div class="game">
+            <game-logic player="0"></game-logic>
             <div class="game-board">
                 <div>
                     <div class="board-row">
@@ -35,12 +36,12 @@
                         <game-square color="white" id="8"></game-square>
                     </div>
                 </div>
-                <div class="game-info">
-                    <div id="game-info-player"></div>
-                    <ol>
-                        <li><button id="game-info-start">Go to game start</button></li>
-                    </ol>
-                </div>
+            </div>
+            <div class="game-info">
+                <div id="game-info-player">Click start to begin a new game.</div>
+                <ol>
+                    <li><button id="game-info-start">Start</button></li>
+                </ol>
             </div>
         </div>
     </template>
