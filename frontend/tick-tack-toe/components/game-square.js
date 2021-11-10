@@ -1,69 +1,77 @@
-const ts = document.createElement("template");
-ts.innerHTML = `<button class="square"></button>`;
+const squareTemplate = document.createElement("template");
+squareTemplate.innerHTML = `
+<style>
+.square {
+  background: #fff;
+  border: 1px solid #999;
+  float: left;
+  font-size: 24px;
+  font-weight: bold;
+  line-height: 34px;
+  height: 34px;
+  margin-right: -1px;
+  margin-top: -1px;
+  padding: 0;
+  text-align: center;
+  width: 34px;
+}
+
+.square:focus {
+  outline: none;
+}
+</style>
+<button class="square"></button>`;
+
+const INIT_STATE = {
+  move: undefined,
+  index: undefined,
+  player: undefined,
+  color: undefined,
+};
 
 export default class TicTackToeSquare extends HTMLElement {
   constructor() {
     super();
-    this.appendChild(ts.content.cloneNode(true));
+    this.attachShadow({ mode: "open" });
+    this.shadowRoot.appendChild(squareTemplate.content.cloneNode(true));
 
-    this.button = this.querySelector("button");
-
-    this.clickListener = (e) => {
-      e.preventDefault();
-      const newEvent = new CustomEvent("squareOccupied", {
-        detail: this.id,
-        bubbles: true,
-        composed: true,
-      });
-      this.dispatchEvent(newEvent);
-      this.button.removeEventListener("click", this.clickListener);
-    };
-
-    this.gameStartListener = (e) => {
-      this.removeAttribute("played");
-      this.setAttribute("color", "white");
-      this.button.addEventListener("click", this.clickListener);
-    };
-
-    this.playerMovedListener = (e) => {
-      const { player, squareId } = e?.detail;
-      if (squareId !== this.id) return;
-      console.log("[SQUARE] reserved for player",e)
-
-      this.setAttribute("color", player.color);
-      this.setAttribute("played", player.icon);
-      this.button.addEventListener("click", this.clickListener);
-    };
-
-    this.gameOverListener = (e) => {
-      this.button.removeEventListener("click", this.clickListener);
-    };
-  }
-
-  connectedCallback() {
-    document.addEventListener("newGameRequest", this.gameStartListener);
-    document.addEventListener("gameOver", this.gameOverListener); 
-    document.addEventListener("playerMoved", this.playerMovedListener);
-  }
-
-  disconnectedCallback() {
-    document.removeEventListener(this.gameStartListener);
-    document.removeEventListener(this.gameOverListener);
+    this.state = INIT_STATE;
+    this.button = this.shadowRoot.querySelector("button");
   }
 
   static get observedAttributes() {
-    return ["color", "played"];
+    return ["color", "player", "move", "index"];
   }
 
   attributeChangedCallback(attributeName, oldValue, newValue) {
+    console.debug(
+      "[GAME SQUARE] attributeChangedCallback",
+      attributeName,
+      oldValue,
+      newValue
+    );
+
+    if (oldValue == newValue) {
+      console.debug(
+        "[GAME SQUARE] attributeChangedCallback - old and new are the same. no change needed for [%s]",
+        attributeName
+      );
+      return;
+    }
+
     if (attributeName === "color") {
       this.color = newValue;
       this.button.style.background = this.color;
     }
-    if (attributeName === "played") {
-      this.played = newValue;
-      this.firstChild.innerHTML = this.played;
-      this.button.removeEventListener("click", this.clickListener);
+    if (attributeName === "player") {
+      this.player = newValue;
+      this.button.innerText = this.player;
+    }
+    if (attributeName === "move") {
+      this.move = newValue;
+    }
+    if (attributeName === "index") {
+      this.index = newValue;
     }
   }
 }

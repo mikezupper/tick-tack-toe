@@ -6,43 +6,46 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tick Tack Toe - No Build & No Framework</title>
-    <link rel="stylesheet" href="styles.css">
     <script type="module" src="components/index.js"></script>
 </head>
 
-<body>
-    <div id="root">
-        <div id="errors" clas="errors"></div>
-        <game-app></game-app>
-    </div>
+<body style="font: 14px 'Century Gothic', Futura, sans-serif; margin: 20px; ">
+    <game-app></game-app>
     <template id="game-app-template">
-        <div class="game">
-            <game-logic player="0"></game-logic>
-            <div class="game-board">
-                <div>
-                    <div class="board-row">
-                        <game-square color="white" id="0"></game-square>
-                        <game-square color="white" id="1"></game-square>
-                        <game-square color="white" id="2"></game-square>
-                    </div>
-                    <div class="board-row">
-                        <game-square color="white" id="3"></game-square>
-                        <game-square color="white" id="4"></game-square>
-                        <game-square color="white" id="5"></game-square>
-                    </div>
-                    <div class="board-row">
-                        <game-square color="white" id="6"></game-square>
-                        <game-square color="white" id="7"></game-square>
-                        <game-square color="white" id="8"></game-square>
+        <div id="root">
+            <div id="errors" clas="errors"></div>
+            <div class="game">
+                <div class="game-board">
+                    <div>
+                        <div class="board-row">
+                            <game-square color="white" index="0"></game-square>
+                            <game-square color="white" index="1"></game-square>
+                            <game-square color="white" index="2"></game-square>
+                        </div>
+                        <div class="board-row">
+                            <game-square color="white" index="3"></game-square>
+                            <game-square color="white" index="4"></game-square>
+                            <game-square color="white" index="5"></game-square>
+                        </div>
+                        <div class="board-row">
+                            <game-square color="white" index="6"></game-square>
+                            <game-square color="white" index="7"></game-square>
+                            <game-square color="white" index="8"></game-square>
+                        </div>
                     </div>
                 </div>
+                <game-info></game-info>
             </div>
-            <div class="game-info">
-                <div id="game-info-player">Click start to begin a new game.</div>
-                <ol>
-                    <li><button id="game-info-start">Start</button></li>
-                </ol>
-            </div>
+        </div>
+    </template>
+    <template id="game-info-template">
+        <div class="game-info">
+            <div id="game-info-player">Click start to begin a new game.</div>
+            <ol>
+                <li><button id="game-info-start">Start</button></li>
+                <li><button id="game-info-start">Go to move #1</button></li>
+                <li><button id="game-info-start">Go to move #2</button></li>
+            </ol>
         </div>
     </template>
 </body>

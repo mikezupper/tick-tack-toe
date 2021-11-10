@@ -12,33 +12,23 @@ export default class TicTackToeGameLogic extends HTMLElement {
   constructor() {
     super();
     this.state = INIT_STATE;
-    this.players = [
-      {
-        name: "Player 1",
-        icon: "X",
-        color: "yellow",
-      },
-      {
-        name: "Player 2",
-        icon: "O",
-        color: "coral",
-      },
-    ];
 
-    this.currentPlayer = 1;
-
-    this.squareOccupiedListener = (e) => {
-      const currentPlayer = this.players[this.currentPlayer];
-      const i = e.detail;
-      console.log("[LOGIC] square claimed", i);
+    this.squareClickedListener = (e) => {
+      console.log("[GAME LOGIC]  - squared clicked", e.srcElement);
+      const targetSquare = e.srcElement;
+      const index = e.srcElement.getAttribute("index");
       const history = this.state.history.slice(0, this.state.stepNumber + 1);
       const current = history[history.length - 1];
       const squares = current.squares.slice();
-      console.log("[LOGIC] squares", squares);
-      console.log("[LOGIC] current", current);
+      squares[index] = this.state.xIsNext ? "X" : "O";
 
-      squares[i] = this.state.xIsNext ? "X" : "O";
-      console.log("is xNext", this.state.xIsNext, currentPlayer);
+      targetSquare.removeEventListener("click", this.squareClickedListener);
+      targetSquare.setAttribute("player", squares[index]);
+      targetSquare.setAttribute("index", index);
+      targetSquare.setAttribute(
+        "color",
+        this.state.xIsNext ? "yellow" : "coral"
+      );
       this.state = {
         history: history.concat([
           {
@@ -50,59 +40,49 @@ export default class TicTackToeGameLogic extends HTMLElement {
         xIsNext: !this.state.xIsNext,
       };
 
-      const newEvent = new CustomEvent("playerMoved", {
-        detail: {
-          player: currentPlayer,
-          squareId: e.detail,
-        },
-        bubbles: true,
-        composed: true,
-      });
-      document.dispatchEvent(newEvent);
-      console.log("[LOGIC] new state checking winner !!!!", this.state);
       const winner = calculateWinner(squares);
-
-      console.log("is winner?", winner, squares[i]);
-
-      if (winner) {
-        console.log("winner");
-        const newEvent = new CustomEvent("gameOver", {
-          detail: {
-            player: this.players[this.currentPlayer],
-          },
+      if (winner && squares[index]) {
+        const evt = new CustomEvent("gameOver", {
           bubbles: true,
           composed: true,
+          detail: {
+            winner,
+          },
         });
-        document.dispatchEvent(newEvent);
+        console.log("[GAME LOGIC]  -  winner calculated", evt, this);
+
+        this.dispatchEvent(evt);
+
+        //stop
+        this.removeSquareListeners();
+
         return;
       }
-
-      this.currentPlayer = this.currentPlayer == 0 ? 1 : 0;
-    };
-
-    this.newGameListener = (e) => {
-      console.log("[LOGIC] new game", e);
-      this.state = INIT_STATE;
-      const newEvent = new CustomEvent("gameStarted", {
-        detail: {
-          player: this.players[this.currentPlayer],
-        },
-        bubbles: true,
-        composed: true,
-      });
-
-      document.dispatchEvent(newEvent);
     };
   }
 
   connectedCallback() {
-    const app = document.querySelector("game-app");
-    app.addEventListener("squareOccupied", this.squareOccupiedListener);
-    app.addEventListener("newGameRequest", this.newGameListener);
+    console.debug("[GAME LOGIC] connectedCallback ");
+    this.addSquareListeners();
   }
 
   disconnectedCallback() {
-    document.removeEventListener("squareOccupied", this.squareOccupiedListener);
+    console.debug("[GAME LOGIC] disconnectedCallback");
+    this.removeSquareListeners();
+  }
+
+  removeSquareListeners() {
+    const gameSquares = document.querySelectorAll("game-square");
+    gameSquares.forEach((s) => {
+      s.removeEventListener("click", this.squareClickedListener);
+    });
+  }
+
+  addSquareListeners() {
+    const gameSquares = document.querySelectorAll("game-square");
+    gameSquares.forEach((s) => {
+      s.addEventListener("click", this.squareClickedListener);
+    });
   }
 
   static get observedAttributes() {
@@ -110,7 +90,12 @@ export default class TicTackToeGameLogic extends HTMLElement {
   }
 
   attributeChangedCallback(attributeName, oldValue, newValue) {
-    console.log("logic player attr change", attributeName, oldValue, newValue);
+    console.debug(
+      "[GAME LOGIC] attributeChangedCallback",
+      attributeName,
+      oldValue,
+      newValue
+    );
     if (attributeName === "player") {
       this.player = newValue;
     }

@@ -1,52 +1,92 @@
+const styleTemplate = document.createElement("template");
+styleTemplate.innerHTML = `
+<style>
+body {
+  font: 14px "Century Gothic", Futura, sans-serif;
+  margin: 20px;
+}
+
+ol,
+ul {
+  padding-left: 30px;
+}
+
+.board-row:after {
+  clear: both;
+  content: "";
+  display: table;
+}
+
+.status {
+  margin-bottom: 10px;
+}
+
+.square {
+  background: #fff;
+  border: 1px solid #999;
+  float: left;
+  font-size: 24px;
+  font-weight: bold;
+  line-height: 34px;
+  height: 34px;
+  margin-right: -1px;
+  margin-top: -1px;
+  padding: 0;
+  text-align: center;
+  width: 34px;
+}
+
+.square:focus {
+  outline: none;
+}
+
+.kbd-navigation .square:focus {
+  background: #ddd;
+}
+
+.game {
+  display: flex;
+  flex-direction: row;
+}
+
+.game-info {
+  margin-left: 20px;
+}
+
+.errors {
+  background: #c00;
+  color: #fff;
+  display: none;
+  margin: -20px -20px 20px;
+  padding: 20px;
+  white-space: pre-wrap;
+}
+</style>`;
+
 export default class TicTackToeGameApp extends HTMLElement {
   constructor() {
     super();
-
+    //this.attachShadow({ mode: "open" });
+    this.appendChild(styleTemplate.content.cloneNode(true));
     this.appendChild(
       document.querySelector("#game-app-template").content.cloneNode(true)
     );
+    this.gameLogic = document.createElement("game-logic");
+    this.appendChild(this.gameLogic);
 
-    // add event listeners
-    this.gameOverListener = (e) => {
-      document.querySelector(
-        "#game-info-player"
-      ).innerHTML = `Winner: ${e.detail?.player.name}`;
-    };
-
-    this.gameStartListener = (e) => {
-      document.querySelector(
-        "#game-info-player"
-      ).innerHTML = `Make starting move...`;
-    };
-
-    this.playerMovedListener = (e) => {
-      console.log("[GAME APP] player moved", e);
-      document.querySelector(
-        "#game-info-player"
-      ).innerHTML = `Next Player: ${e.detail?.player.name}`;
-    };
-
-    const btn = this.querySelector("#game-info-start");
-    btn.addEventListener("click", (e) => {
-      this.dispatchEvent(
-        new CustomEvent("newGameRequest", {
-          bubbles: true,
-          composed: true,
-        })
-      );
-    });
+    // this.gameOverListener = (e) => {
+    //   console.log("[GAME APP] game over", e);
+    // };
   }
 
   connectedCallback() {
-    document.addEventListener("newGameRequest", this.gameStartListener);
-    document.addEventListener("gameOver", this.gameOverListener);
-    document.addEventListener("playerMoved", this.playerMovedListener);
+    console.debug("[GAME APP] connectedCallback");
+  //  this.gameLogic.addEventListener("gameOver", this.gameOverListener);
   }
 
   disconnectedCallback() {
-    document
-      .querySelector("#game-info-start")
-      .removeEventListener("click", this.gameStartListener);
+    console.debug("[GAME APP] disconnectedCallback");
+   // this.gameLogic.removeEventListener("gameOver", this.gameOverListener);
   }
 }
 customElements.define("game-app", TicTackToeGameApp);
