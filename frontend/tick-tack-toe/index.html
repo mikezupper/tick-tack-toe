@@ -15,7 +15,7 @@
         <div id="root">
             <div id="errors" clas="errors"></div>
             <div class="game">
-                <div class="game-board">
+                <div id="game-board" class="game-board">
                     <div>
                         <div class="board-row">
                             <game-square color="white" index="0"></game-square>
@@ -41,12 +41,13 @@
     <template id="game-info-template">
         <div class="game-info">
             <div id="game-info-player">Click start to begin a new game.</div>
-            <ol>
-                <li><button id="game-info-start">Start</button></li>
-                <li><button id="game-info-start">Go to move #1</button></li>
-                <li><button id="game-info-start">Go to move #2</button></li>
-            </ol>
+            <game-history></game-history>
         </div>
+    </template>
+    <template id="game-history-template">
+        <ol>
+            <li><button id="game-info-start">Start</button></li>
+        </ol>
     </template>
 </body>
 

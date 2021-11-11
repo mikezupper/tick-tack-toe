@@ -13,6 +13,36 @@ export default class TicTackToeGameLogic extends HTMLElement {
     super();
     this.state = INIT_STATE;
 
+    this.gameResetLisetner = (e) => {
+      console.log("[GAME LOGIC]  - game reset", e);
+      const step = e.detail.move;
+      const history = this.state.history.slice(0, step + 1);
+      const current = history[history.length - 1];
+      const squares = current.squares.slice();
+      const domSquares = document.querySelectorAll("game-square");
+
+      for (var i = 0; i < squares.length; i++) {
+        var square = squares[i];
+        var domSquare = domSquares[i];
+        if ((square || domSquare) && square != domSquare.player) {
+          // console.log("[GAME LOGIC]  -  send the event", domSquare.player, square);
+          const resetSquareEvent = new CustomEvent("resetSquare", {
+            bubbles: true,
+            composed: true,
+          });
+          domSquare.dispatchEvent(resetSquareEvent);
+          domSquare.addEventListener("click", this.squareClickedListener);
+        }
+      }
+
+      this.state = {
+        stepNumber: step,
+        xIsNext: step % 2 === 0,
+        history,
+      };
+      console.log("[GAME LOGIC]  - new game state", this.state);
+    };
+
     this.squareClickedListener = (e) => {
       console.log("[GAME LOGIC]  - squared clicked", e.srcElement);
       const targetSquare = e.srcElement;
@@ -40,6 +70,17 @@ export default class TicTackToeGameLogic extends HTMLElement {
         xIsNext: !this.state.xIsNext,
       };
 
+      const playerMovedEvent = new CustomEvent("playerMoved", {
+        bubbles: true,
+        composed: true,
+        detail: {
+          move: this.state.stepNumber,
+          player: squares[index],
+          squareIndex: index,
+        },
+      });
+
+      this.dispatchEvent(playerMovedEvent);
       const winner = calculateWinner(squares);
       if (winner && squares[index]) {
         const evt = new CustomEvent("gameOver", {
@@ -49,8 +90,6 @@ export default class TicTackToeGameLogic extends HTMLElement {
             winner,
           },
         });
-        console.log("[GAME LOGIC]  -  winner calculated", evt, this);
-
         this.dispatchEvent(evt);
 
         //stop
@@ -64,11 +103,14 @@ export default class TicTackToeGameLogic extends HTMLElement {
   connectedCallback() {
     console.debug("[GAME LOGIC] connectedCallback ");
     this.addSquareListeners();
+    this.addEventListener("gameReset", this.gameResetListener);
   }
 
   disconnectedCallback() {
     console.debug("[GAME LOGIC] disconnectedCallback");
     this.removeSquareListeners();
+    this.removeEventListener("gameReset", this.gameResetListener);
+
   }
 
   removeSquareListeners() {

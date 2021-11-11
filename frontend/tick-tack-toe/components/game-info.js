@@ -6,18 +6,16 @@ export default class TicTackToeGameInfo extends HTMLElement {
     //this.attachShadow({ mode: "open" });
     this.appendChild(gameInfoTemplate.content.cloneNode(true));
     this.squareClickedListener = (e) => {
-      console.log("[GAME INFO]  - squared clicked", e.srcElement.player);
-      const nextPlayer = e.srcElement.player == "O" ? "X" : "O";
+      const {move,player,squareIndex} = e.detail;
+      console.log("[GAME INFO]  - player moved ", move,player,squareIndex);
+      const nextPlayer = player == "O" ? "X" : "O";
       this.setAttribute("next-player", nextPlayer);
-      document.querySelector(
-        "#game-info-player"
-      ).innerHTML = `Next player: ${nextPlayer}`;
+      this.renderPlayerInfo(`Next player: ${nextPlayer}`);
     };
+
     this.gameOverListener = (e) => {
       console.log("[GAME INFO]  - game over", e);
-      document.querySelector(
-        "#game-info-player"
-      ).innerHTML = `Winner: ${e.detail.winner}`;
+      this.renderPlayerInfo(`Winner: ${e.detail.winner}`);
     };
   }
 
@@ -26,8 +24,21 @@ export default class TicTackToeGameInfo extends HTMLElement {
   }
 
   connectedCallback() {
-    document.addEventListener("gameOver", this.gameOverListener);
-    this.addEventListener("click", this.squareClickedListener);
+    document
+      .querySelector("game-app")
+      .addEventListener("playerMoved", this.squareClickedListener);
+    document
+      .querySelector("game-app")
+      .addEventListener("gameOver", this.gameOverListener);
+  }
+
+  disconnectedCallback() {
+    document
+      .querySelector("game-app")
+      .removeEventListener("playerMoved", this.squareClickedListener);
+    document
+      .querySelector("game-app")
+      .removeEventListener("gameOver", this.gameOverListener);
   }
 
   attributeChangedCallback(attributeName, oldValue, newValue) {
@@ -52,6 +63,10 @@ export default class TicTackToeGameInfo extends HTMLElement {
     if (attributeName === "nextPlayer") {
       this.nextPlayer = newValue;
     }
+  }
+
+  renderPlayerInfo(text) {
+    document.querySelector("#game-info-player").innerHTML = text;
   }
 }
 customElements.define("game-info", TicTackToeGameInfo);

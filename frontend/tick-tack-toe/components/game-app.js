@@ -68,25 +68,9 @@ export default class TicTackToeGameApp extends HTMLElement {
     super();
     //this.attachShadow({ mode: "open" });
     this.appendChild(styleTemplate.content.cloneNode(true));
-    this.appendChild(
-      document.querySelector("#game-app-template").content.cloneNode(true)
-    );
+    this.appendChild(document.querySelector("#game-app-template").content.cloneNode(true));
     this.gameLogic = document.createElement("game-logic");
     this.appendChild(this.gameLogic);
-
-    // this.gameOverListener = (e) => {
-    //   console.log("[GAME APP] game over", e);
-    // };
-  }
-
-  connectedCallback() {
-    console.debug("[GAME APP] connectedCallback");
-  //  this.gameLogic.addEventListener("gameOver", this.gameOverListener);
-  }
-
-  disconnectedCallback() {
-    console.debug("[GAME APP] disconnectedCallback");
-   // this.gameLogic.removeEventListener("gameOver", this.gameOverListener);
   }
 }
 customElements.define("game-app", TicTackToeGameApp);

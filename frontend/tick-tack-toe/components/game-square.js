@@ -37,25 +37,41 @@ export default class TicTackToeSquare extends HTMLElement {
 
     this.state = INIT_STATE;
     this.button = this.shadowRoot.querySelector("button");
+    this.resetSquareListener = (e) => {
+      const square = e.target;
+      this.state = INIT_STATE;
+      square.removeAttribute("move");
+      square.removeAttribute("index");
+      square.setAttribute("color", "white");
+      square.removeAttribute("player");
+    };
   }
 
   static get observedAttributes() {
     return ["color", "player", "move", "index"];
   }
 
+  connectedCallback() {
+    this.addEventListener("resetSquare", this.resetSquareListener);
+  }
+
+  disconnectedCallback() {
+    this.removeEventListener("resetSquare", this.resetSquareListener);
+  }
+
   attributeChangedCallback(attributeName, oldValue, newValue) {
-    console.debug(
-      "[GAME SQUARE] attributeChangedCallback",
-      attributeName,
-      oldValue,
-      newValue
-    );
+    // console.debug(
+    //   "[GAME SQUARE] attributeChangedCallback",
+    //   attributeName,
+    //   oldValue,
+    //   newValue
+    // );
 
     if (oldValue == newValue) {
-      console.debug(
-        "[GAME SQUARE] attributeChangedCallback - old and new are the same. no change needed for [%s]",
-        attributeName
-      );
+      // console.debug(
+      //   "[GAME SQUARE] attributeChangedCallback - old and new are the same. no change needed for [%s]",
+      //   attributeName
+      // );
       return;
     }
 
