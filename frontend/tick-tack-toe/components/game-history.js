@@ -17,7 +17,14 @@ export default class TicTackToeGameHistory extends HTMLElement {
           move: 0,
         },
       });
-      this.gameLogic.dispatchEvent(evt);
+      this.dispatchEvent(evt);
+
+      const lis = document.querySelectorAll("game-history ol li");
+      lis.forEach((c) => {
+        if (c.getAttribute("move")) {
+          c.remove();
+        }
+      });
     };
 
     this.playerMovedListener = (e) => {
@@ -26,19 +33,24 @@ export default class TicTackToeGameHistory extends HTMLElement {
       const li = document.createElement("li");
       const btn = document.createElement("button");
       btn.onclick = (e) => {
-        const evt = new CustomEvent("gameReset", {
+        const lis = document.querySelectorAll("game-history ol li");
+        lis.forEach((c) => {
+          if (parseInt(c.getAttribute("move")) > move) {
+            c.remove();
+          }
+        });
+
+        const x = new CustomEvent("gameReset", {
           bubbles: true,
           composed: true,
+          cancelable: false,
           detail: {
             move,
           },
         });
-        this.gameLogic.dispatchEvent(evt);
-        const lis = document.querySelectorAll("game-history ol li");
-        lis.forEach((c) => {
-          if (parseInt(c.getAttribute("move")) > move) c.remove();
-        });
-        console.log(lis);
+        console.log("dispatch rset event", x);
+
+        document.querySelector("game-logic").dispatchEvent(x);
       };
 
       btn.innerText = `Go to move ${move}`;
@@ -52,7 +64,7 @@ export default class TicTackToeGameHistory extends HTMLElement {
     this.gameLogic.addEventListener("playerMoved", this.playerMovedListener);
     this.gameInfo.addEventListener("click", this.startOverListener);
   }
-  
+
   disconnectedCallback() {
     this.gameLogic.removeEventListener("playerMoved", this.playerMovedListener);
     this.gameInfo.removeEventListener("click", this.startOverListener);

@@ -13,7 +13,7 @@ export default class TicTackToeGameLogic extends HTMLElement {
     super();
     this.state = INIT_STATE;
 
-    this.gameResetLisetner = (e) => {
+    this.resetGameListener = (e) => {
       console.log("[GAME LOGIC]  - game reset", e);
       const step = e.detail.move;
       const history = this.state.history.slice(0, step + 1);
@@ -25,12 +25,8 @@ export default class TicTackToeGameLogic extends HTMLElement {
         var square = squares[i];
         var domSquare = domSquares[i];
         if ((square || domSquare) && square != domSquare.player) {
-          // console.log("[GAME LOGIC]  -  send the event", domSquare.player, square);
-          const resetSquareEvent = new CustomEvent("resetSquare", {
-            bubbles: true,
-            composed: true,
-          });
-          domSquare.dispatchEvent(resetSquareEvent);
+          //console.log("[GAME LOGIC]  - reset square state", domSquare);
+          domSquare.resetState();
           domSquare.addEventListener("click", this.squareClickedListener);
         }
       }
@@ -81,6 +77,7 @@ export default class TicTackToeGameLogic extends HTMLElement {
       });
 
       this.dispatchEvent(playerMovedEvent);
+
       const winner = calculateWinner(squares);
       if (winner && squares[index]) {
         const evt = new CustomEvent("gameOver", {
@@ -103,14 +100,12 @@ export default class TicTackToeGameLogic extends HTMLElement {
   connectedCallback() {
     console.debug("[GAME LOGIC] connectedCallback ");
     this.addSquareListeners();
-    this.addEventListener("gameReset", this.gameResetListener);
+    document.addEventListener("gameReset", this.resetGameListener);
   }
 
   disconnectedCallback() {
     console.debug("[GAME LOGIC] disconnectedCallback");
     this.removeSquareListeners();
-    this.removeEventListener("gameReset", this.gameResetListener);
-
   }
 
   removeSquareListeners() {

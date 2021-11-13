@@ -37,36 +37,21 @@ export default class TicTackToeSquare extends HTMLElement {
 
     this.state = INIT_STATE;
     this.button = this.shadowRoot.querySelector("button");
-    this.resetSquareListener = (e) => {
-      const square = e.target;
-      this.state = INIT_STATE;
-      square.removeAttribute("move");
-      square.removeAttribute("index");
-      square.setAttribute("color", "white");
-      square.removeAttribute("player");
-    };
   }
 
   static get observedAttributes() {
     return ["color", "player", "move", "index"];
   }
 
-  connectedCallback() {
-    this.addEventListener("resetSquare", this.resetSquareListener);
-  }
-
-  disconnectedCallback() {
-    this.removeEventListener("resetSquare", this.resetSquareListener);
+  resetState() {
+    this.state = INIT_STATE;
+    this.removeAttribute("move");
+    this.removeAttribute("index");
+    this.setAttribute("color", "white");
+    this.removeAttribute("player");
   }
 
   attributeChangedCallback(attributeName, oldValue, newValue) {
-    // console.debug(
-    //   "[GAME SQUARE] attributeChangedCallback",
-    //   attributeName,
-    //   oldValue,
-    //   newValue
-    // );
-
     if (oldValue == newValue) {
       // console.debug(
       //   "[GAME SQUARE] attributeChangedCallback - old and new are the same. no change needed for [%s]",
@@ -74,7 +59,14 @@ export default class TicTackToeSquare extends HTMLElement {
       // );
       return;
     }
-
+    if (oldValue != null) {
+      console.debug(
+        `[GAME SQUARE #${this.getAttribute("index")}] attributeChangedCallback`,
+        attributeName,
+        oldValue,
+        newValue
+      );
+    }
     if (attributeName === "color") {
       this.color = newValue;
       this.button.style.background = this.color;
